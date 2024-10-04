@@ -36,15 +36,50 @@ window.geometry(f'{window_width}x{window_height}+{window_x}+{window_y}')
 
 #initialize the game
 snake = Tile(5*TILE_SIZE, 5*TILE_SIZE) #single tile, snake's head
+food = Tile(10*TILE_SIZE, 10*TILE_SIZE)
+velocityX = 0
+velocityY = 0
+
+def change_direction(event):
+    #print(event)
+    #print(event.keysym)
+    global velocityX, velocityY
+
+    if (event.keysym == "Up"):
+        velocityX = 0
+        velocityY = -1
+
+    elif (event.keysym == "Down"):
+        velocityX = 0
+        velocityY = 1
+    
+    elif (event.keysym == "Left"):
+        velocityX = -1
+        velocityY = 0
+
+    elif (event.keysym == "Right"):
+        velocityX = 1
+        velocityY = 0
+
+def move():
+    global snake
+
+    snake.x += velocityX * TILE_SIZE
+    snake.y += velocityY * TILE_SIZE
 
 def draw():
     global snake
+    move()
 
-    #draw snake
+    #draw the snake
     canvas.create_rectangle(snake.x, snake.y, snake.x + TILE_SIZE, snake.y + TILE_SIZE, fill = "pink")
+
+    #draw the food
+    canvas.create_rectangle(food.x, food.y, food.x + TILE_SIZE, food.y + TILE_SIZE, fill = "yellow")
 
     window.after(100, draw) #call draw again every 100ms (1/10 of a second) = 10 frames/second
 
 draw()
 
+window.bind("<KeyRelease>", change_direction)
 window.mainloop()
