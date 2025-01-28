@@ -74,6 +74,19 @@ def toggle_pause(event):
     if not game_over:
         paused = not paused
 
+def restart_game(event):
+    global snake, food, snake_body, velocityX, velocityY, game_over, score, paused
+    snake = Tile(5*TILE_SIZE, 5*TILE_SIZE) 
+    food = Tile(10*TILE_SIZE, 10*TILE_SIZE)
+    snake_body = []
+    velocityX = 0
+    velocityY = 0
+    game_over = False
+    score = 0
+    paused = False
+    canvas.delete("all")
+    draw()
+
 def move():
     global snake, food, snake_body, game_over, score
     if (game_over):
@@ -131,7 +144,8 @@ def draw():
         canvas.create_rectangle(tile.x, tile.y, tile.x + TILE_SIZE, tile.y + TILE_SIZE, fill = "pink")
 
     if (game_over):
-        canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, font = "Helvetica 20", text = f"Game Over: {score}", fill = "red")
+        canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, font = "Helvetica 20", text = f"Game Over: {score} \n Press Enter to Restart", fill = "red")
+        return
     
     else:
         canvas.create_text(30, 20, font = "Helvetica 10", text = f"Score: {score}", fill = "white")
@@ -143,4 +157,5 @@ def draw():
 draw()
 window.bind("<KeyRelease>", change_direction)
 window.bind("<space>", toggle_pause)
+window.bind("<Return>", restart_game)
 window.mainloop()
