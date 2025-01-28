@@ -42,6 +42,7 @@ velocityX = 0
 velocityY = 0
 game_over = False
 score = 0
+paused = False
 
 #game loop
 def change_direction(event):
@@ -104,11 +105,21 @@ def move():
     snake.x += velocityX * TILE_SIZE
     snake.y += velocityY * TILE_SIZE
 
+def paused():
+    global paused, game_over
+    if not game_over:
+        paused = not paused
 
 def draw():
-    global snake, food, snake_body, game_over, score
-    move()
+    global snake, food, snake_body, game_over, score, paused
 
+    if paused:
+        canvas.delete("all")
+        canvas.create_text(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, font = "Helvetica 20", text = "Game Paused", fill = "white")
+        window.after(100, draw)
+        return
+    
+    move()
     canvas.delete("all")
 
     #draw the food
@@ -125,7 +136,9 @@ def draw():
     else:
         canvas.create_text(30, 20, font = "Helvetica 10", text = f"Score: {score}", fill = "white")
 
-    window.after(100, draw) #call draw again every 100ms (1/10 of a second) = 10 frames/second
+    
+    game_speed = max(100 - (score * 2), 30) #make the snake move faster as the player's score increases
+    window.after(game_speed, draw) 
 
 draw()
 window.bind("<KeyRelease>", change_direction)
