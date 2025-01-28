@@ -69,6 +69,10 @@ def change_direction(event):
         velocityX = 1
         velocityY = 0
 
+def toggle_pause(event):
+    global paused, game_over
+    if not game_over:
+        paused = not paused
 
 def move():
     global snake, food, snake_body, game_over, score
@@ -105,11 +109,6 @@ def move():
     snake.x += velocityX * TILE_SIZE
     snake.y += velocityY * TILE_SIZE
 
-def paused():
-    global paused, game_over
-    if not game_over:
-        paused = not paused
-
 def draw():
     global snake, food, snake_body, game_over, score, paused
 
@@ -118,7 +117,7 @@ def draw():
         canvas.create_text(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, font = "Helvetica 20", text = "Game Paused", fill = "white")
         window.after(100, draw)
         return
-    
+
     move()
     canvas.delete("all")
 
@@ -133,6 +132,7 @@ def draw():
 
     if (game_over):
         canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, font = "Helvetica 20", text = f"Game Over: {score}", fill = "red")
+    
     else:
         canvas.create_text(30, 20, font = "Helvetica 10", text = f"Score: {score}", fill = "white")
 
@@ -142,4 +142,5 @@ def draw():
 
 draw()
 window.bind("<KeyRelease>", change_direction)
+window.bind("<space>", toggle_pause)
 window.mainloop()
