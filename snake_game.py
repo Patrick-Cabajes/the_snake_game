@@ -104,11 +104,19 @@ def move():
             return
 
     #collision
-    if (snake.x == food.x and snake.y == food.y):
+    if snake.x == food.x and snake.y == food.y:
         snake_body.append(Tile(food.x, food.y))
-        food.x = random.randint(0, COLS-1) * TILE_SIZE
-        food.y = random.randint(0, ROWS-1) * TILE_SIZE
         score += 1
+
+        while True:
+            new_x = random.randint(0, COLS-1) * TILE_SIZE
+            new_y = random.randint(0, ROWS-1) * TILE_SIZE
+
+            overlap = any(tile.x == new_x and tile.y == new_y for tile in snake_body)
+            if not overlap and (new_x != snake.x or new_y != snake.y):
+                food.x = new_x
+                food.y = new_y
+                break
 
     #update the snake body
     for viper in range(len(snake_body)-1, -1, -1):
@@ -144,13 +152,13 @@ def draw():
     canvas.delete("all")
 
     #draw the food
-    canvas.create_rectangle(food.x, food.y, food.x + TILE_SIZE, food.y + TILE_SIZE, fill = "yellow")
+    canvas.create_rectangle(food.x, food.y, food.x + TILE_SIZE, food.y + TILE_SIZE, fill = "yellow", outline = "black")
 
     #draw the snake
-    canvas.create_rectangle(snake.x, snake.y, snake.x + TILE_SIZE, snake.y + TILE_SIZE, fill = "pink")
+    canvas.create_rectangle(snake.x, snake.y, snake.x + TILE_SIZE, snake.y + TILE_SIZE, fill = "pink", outline = "black")
 
     for tile in snake_body:
-        canvas.create_rectangle(tile.x, tile.y, tile.x + TILE_SIZE, tile.y + TILE_SIZE, fill = "pink")
+        canvas.create_rectangle(tile.x, tile.y, tile.x + TILE_SIZE, tile.y + TILE_SIZE, fill = "pink", outline = "black")
 
     if (game_over):
         canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, font = "Helvetica 20", text = f"Game Over: {score}\n Press Enter to Restart", fill = "red")
