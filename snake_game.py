@@ -43,6 +43,7 @@ velocityY = 0
 game_over = False
 score = 0
 paused = False
+first_start = True
 
 #game loop
 def change_direction(event):
@@ -123,11 +124,18 @@ def move():
     snake.y += velocityY * TILE_SIZE
 
 def draw():
-    global snake, food, snake_body, game_over, score, paused
+    global snake, food, snake_body, game_over, score, paused, first_start
 
     if paused:
         canvas.delete("all")
         canvas.create_text(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, font = "Helvetica 20", text = "Game Paused", fill = "white")
+        window.after(100, draw)
+        return
+
+    #prevent automatic start
+    if first_start and velocityX == 0 and velocityY == 0 and not game_over:
+        canvas.delete("all")
+        canvas.create_text(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, font = "Helvetica 20", text = "Press Arrow Key to Start", fill = "white")
         window.after(100, draw)
         return
 
