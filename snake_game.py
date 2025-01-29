@@ -47,12 +47,13 @@ first_start = True
 
 #game loop
 def change_direction(event):
-    #print(event)
-    #print(event.keysym)
+    global velocityX, velocityY, game_over, first_start
 
-    global velocityX, velocityY, game_over
     if (game_over):
         return
+    
+    if first_start:
+        first_start = False
 
     if (event.keysym == "Up" and velocityY != 1):
         velocityX = 0
@@ -152,7 +153,7 @@ def draw():
         canvas.create_rectangle(tile.x, tile.y, tile.x + TILE_SIZE, tile.y + TILE_SIZE, fill = "pink")
 
     if (game_over):
-        canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, font = "Helvetica 20", text = f"Game Over: {score} \n Press Enter to Restart", fill = "red")
+        canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, font = "Helvetica 20", text = f"Game Over: {score}\n Press Enter to Restart", fill = "red")
         return
     
     else:
