@@ -82,6 +82,9 @@ def toggle_pause(event):
 def restart_game(event):
     global snake, food, snake_body, velocityX, velocityY, next_velocityX, next_velocityY, game_over, score, paused, high_score, first_start
 
+    if not game_over:
+        return
+
     snake = Tile(5*TILE_SIZE, 5*TILE_SIZE) 
     food = Tile(10*TILE_SIZE, 10*TILE_SIZE)
     snake_body = []
@@ -150,14 +153,14 @@ def draw():
 
     if paused:
         canvas.delete("all")
-        canvas.create_text(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, font = "Helvetica 20", text = "Game Paused", fill = "white")
+        canvas.create_text(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, font = "Helvetica 20 bold", text = "Game Paused", fill = "#F5E1DA")
         window.after(100, draw)
         return
 
     #prevent automatic start
     if first_start and velocityX == 0 and velocityY == 0 and not game_over:
         canvas.delete("all")
-        canvas.create_text(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, font = "Helvetica 20", text = "Press Arrow Key to Start", fill = "white")
+        canvas.create_text(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2, font = "Helvetica 20 bold", text = "Press Arrow Key to Start", fill = "#FFD700")
         window.after(100, draw)
         return
 
@@ -165,24 +168,24 @@ def draw():
     canvas.delete("all")
 
     #draw the food
-    canvas.create_rectangle(food.x, food.y, food.x + TILE_SIZE, food.y + TILE_SIZE, fill = "yellow", outline = "black")
+    canvas.create_rectangle(food.x, food.y, food.x + TILE_SIZE, food.y + TILE_SIZE, fill = "#FFB74D", outline = "black")
 
     #draw the snake
-    canvas.create_rectangle(snake.x, snake.y, snake.x + TILE_SIZE, snake.y + TILE_SIZE, fill = "pink", outline = "black")
+    canvas.create_rectangle(snake.x, snake.y, snake.x + TILE_SIZE, snake.y + TILE_SIZE, fill = "#D4A373", outline = "black")
 
     for tile in snake_body:
-        canvas.create_rectangle(tile.x, tile.y, tile.x + TILE_SIZE, tile.y + TILE_SIZE, fill = "pink", outline = "black")
+        canvas.create_rectangle(tile.x, tile.y, tile.x + TILE_SIZE, tile.y + TILE_SIZE, fill = "#B5651D", outline = "black")
 
     if game_over:
         global high_score
         if score > high_score:
             high_score = score
 
-        canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, font = "Helvetica 20", text = f"Game Over: {score}\nPress Enter to Restart", fill = "red")
+        canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, font = "Helvetica 20 bold", text = f"Game Over: {score}\nPress Enter to Restart", fill = "#F5E1DA", anchor = "center")
         return
     
     else:
-        canvas.create_text(45, 20, font = "Helvetica 10", text = f"Score: {score}\nHigh Score: {high_score}", fill = "white")
+        canvas.create_text(45, 20, font = "Helvetica 10", text = f"Score: {score}\nHigh Score: {high_score}", fill = "black")
 
     game_speed = max(100 - (score * 2), 30) #make the snake move faster as the player's score increases
     window.after(game_speed, draw) 
