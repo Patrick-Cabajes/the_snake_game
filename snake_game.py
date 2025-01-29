@@ -40,36 +40,39 @@ food = Tile(10*TILE_SIZE, 10*TILE_SIZE)
 snake_body = [] #multiple snake tiles
 velocityX = 0
 velocityY = 0
+next_velocityX = 0
+next_velocityY = 0
 game_over = False
 score = 0
+high_score = 0
 paused = False
 first_start = True
 
 #game loop
 def change_direction(event):
-    global velocityX, velocityY, game_over, first_start
+    global next_velocityX, next_velocityY, first_start, game_over
 
-    if (game_over):
+    if game_over:
         return
     
     if first_start:
         first_start = False
 
-    if (event.keysym == "Up" and velocityY != 1):
-        velocityX = 0
-        velocityY = -1
+    if event.keysym == "Up" and velocityY == 0:
+        next_velocityX = 0
+        next_velocityY = -1
 
-    elif (event.keysym == "Down" and velocityY != -1):
-        velocityX = 0
-        velocityY = 1
+    elif event.keysym == "Down" and velocityY == 0:
+        next_velocityX = 0
+        next_velocityY = 1
     
-    elif (event.keysym == "Left" and velocityX != 1):
-        velocityX = -1
-        velocityY = 0
+    elif event.keysym == "Left" and velocityX == 0:
+        next_velocityX = -1
+        next_velocityY = 0
 
-    elif (event.keysym == "Right" and velocityX != -1):
-        velocityX = 1
-        velocityY = 0
+    elif event.keysym == "Right" and velocityX == 0:
+        next_velocityX = 1
+        next_velocityY = 0
 
 def toggle_pause(event):
     global paused, game_over
@@ -77,33 +80,43 @@ def toggle_pause(event):
         paused = not paused
 
 def restart_game(event):
-    global snake, food, snake_body, velocityX, velocityY, game_over, score, paused
+    global snake, food, snake_body, velocityX, velocityY, next_velocityX, next_velocityY, game_over, score, paused, high_score, first_start
+
     snake = Tile(5*TILE_SIZE, 5*TILE_SIZE) 
     food = Tile(10*TILE_SIZE, 10*TILE_SIZE)
     snake_body = []
     velocityX = 0
     velocityY = 0
+    next_velocityX = 0
+    next_velocityY = 0
     game_over = False
     score = 0
     paused = False
+    first_start = False
     canvas.delete("all")
     draw()
 
 def move():
-    global snake, food, snake_body, game_over, score
-    if (game_over):
+    global snake, food, snake_body, game_over, score, velocityX, velocityY, next_velocityX, next_velocityY
+
+    if game_over:
         return
     
-    if (snake.x < 0 or snake.x >= WINDOW_WIDTH or snake.y < 0 or snake.y >= WINDOW_HEIGHT):
+    if not (next_velocityX == -velocityX and next_velocityY == -velocityY):
+        velocityX, velocityY = next_velocityX, next_velocityY
+    
+    # wall collision
+    if snake.x < 0 or snake.x >= WINDOW_WIDTH or snake.y < 0 or snake.y >= WINDOW_HEIGHT:
         game_over = True
         return
     
+    # collision
     for tile in snake_body:
-        if (snake.x == tile.x and snake.y == tile.y):
+        if snake.x == tile.x and snake.y == tile.y:
             game_over = True
             return
-
-    #collision
+        
+    # snake's food and increase in size
     if snake.x == food.x and snake.y == food.y:
         snake_body.append(Tile(food.x, food.y))
         score += 1
@@ -118,10 +131,10 @@ def move():
                 food.y = new_y
                 break
 
-    #update the snake body
+    # update the snake body
     for viper in range(len(snake_body)-1, -1, -1):
         tile = snake_body[viper]
-        if (viper == 0):
+        if viper == 0:
             tile.x = snake.x
             tile.y = snake.y
         else:
@@ -160,19 +173,22 @@ def draw():
     for tile in snake_body:
         canvas.create_rectangle(tile.x, tile.y, tile.x + TILE_SIZE, tile.y + TILE_SIZE, fill = "pink", outline = "black")
 
-    if (game_over):
-        canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, font = "Helvetica 20", text = f"Game Over: {score}\n Press Enter to Restart", fill = "red")
+    if game_over:
+        global high_score
+        if score > high_score:
+            high_score = score
+
+        canvas.create_text(WINDOW_WIDTH/2, WINDOW_HEIGHT/2, font = "Helvetica 20", text = f"Game Over: {score}\nPress Enter to Restart", fill = "red")
         return
     
     else:
-        canvas.create_text(30, 20, font = "Helvetica 10", text = f"Score: {score}", fill = "white")
+        canvas.create_text(45, 20, font = "Helvetica 10", text = f"Score: {score}\nHigh Score: {high_score}", fill = "white")
 
-    
     game_speed = max(100 - (score * 2), 30) #make the snake move faster as the player's score increases
     window.after(game_speed, draw) 
 
 draw()
-window.bind("<KeyRelease>", change_direction)
+window.bind("<KeyPress>", change_direction)
 window.bind("<space>", toggle_pause)
 window.bind("<Return>", restart_game)
 window.mainloop()
